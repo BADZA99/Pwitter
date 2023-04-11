@@ -5,43 +5,44 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { useSession } from "next-auth/react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { AnimatePresence,motion } from "framer-motion";
 
 export default function Feed() {
-  const [posts,setPosts]=useState([]);
-    useEffect(
-      ()=> 
+  const [posts, setPosts] = useState([]);
+  useEffect(
+    () =>
       onSnapshot(
-          query(collection(db,"posts"),orderBy("timestamp","desc")),
-          (snapshot)=>{
-            setPosts(snapshot.docs);
-          }
-        ),
-      []
-    );
+        query(collection(db, "posts"), orderBy("timestamp", "desc")),
+        (snapshot) => {
+          setPosts(snapshot.docs);
+        }
+      ),
+    []
+  );
 
-    //  dummy data
-    // const posts = [
-    //   {
-    //     id: "1",
-    //     name: "Elon Musk",
-    //     username: "elongoat ",
-    //     userImg:
-    //       "https://media.lesechos.com/api/v1/images/view/63898cb2160db4077a075737/1280x720/0702924180480-web-tete.jpg",
-    //     img: "https://images.unsplash.com/photo-1617704548623-340376564e68?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZWxvbiUyMG11c2t8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-    //     text: "I am the king of the world",
-    //     timestamp: "2 hours ago",
-    //   },
-    //   {
-    //     id: "2",
-    //     name: "Jef besos",
-    //     username: "jeftheboss",
-    //     userImg:
-    //       "https://images.omerlocdn.com/resize?url=https%3A%2F%2Fgcm.omerlocdn.com%2Fproduction%2Fglobal%2Ffiles%2Fimage%2Ff7956ccc-fcb0-444a-bc37-0e0097ef3bc1.JPG&width=1024&type=jpeg&stripmeta=true",
-    //     img: "https://images.omerlocdn.com/resize?url=https%3A%2F%2Fgcm.omerlocdn.com%2Fproduction%2Fglobal%2Ffiles%2Fimage%2Ff7956ccc-fcb0-444a-bc37-0e0097ef3bc1.JPG&width=1024&type=jpeg&stripmeta=true",
-    //     text: "I don't think so",
-    //     timestamp: "1 hours ago",
-    //   },
-    // ];
+  //  dummy data
+  // const posts = [
+  //   {
+  //     id: "1",
+  //     name: "Elon Musk",
+  //     username: "elongoat ",
+  //     userImg:
+  //       "https://media.lesechos.com/api/v1/images/view/63898cb2160db4077a075737/1280x720/0702924180480-web-tete.jpg",
+  //     img: "https://images.unsplash.com/photo-1617704548623-340376564e68?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZWxvbiUyMG11c2t8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
+  //     text: "I am the king of the world",
+  //     timestamp: "2 hours ago",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Jef besos",
+  //     username: "jeftheboss",
+  //     userImg:
+  //       "https://images.omerlocdn.com/resize?url=https%3A%2F%2Fgcm.omerlocdn.com%2Fproduction%2Fglobal%2Ffiles%2Fimage%2Ff7956ccc-fcb0-444a-bc37-0e0097ef3bc1.JPG&width=1024&type=jpeg&stripmeta=true",
+  //     img: "https://images.omerlocdn.com/resize?url=https%3A%2F%2Fgcm.omerlocdn.com%2Fproduction%2Fglobal%2Ffiles%2Fimage%2Ff7956ccc-fcb0-444a-bc37-0e0097ef3bc1.JPG&width=1024&type=jpeg&stripmeta=true",
+  //     text: "I don't think so",
+  //     timestamp: "1 hours ago",
+  //   },
+  // ];
   return (
     <div className="xl:ml-[370px] border-2 border-r xl:min-w[576px] border-gray-200 sm:ml-[73px] flex-grow max-w-xl">
       <div className="flex py-2 px-3 sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -57,18 +58,19 @@ export default function Feed() {
           </svg>
         </div>
       </div>
-      <Input/>
+      <Input />
+      <AnimatePresence>
+
         {posts.map((post) => (
+
+          <motion.div key={post.id} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration: 1}}>
+
             <Post
-            key={post.id} post={post}
-            name={post.name}
-            username={post.username}
-            userImg={post.userImg}
-            img={post.img}
-            text={post.text}
-            timestamp={post.timestamp}
+              key={post.id} post={post}
             />
+          </motion.div>
         ))}
+      </AnimatePresence>
 
     </div>
   );

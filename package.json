@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.0.17",
     "autoprefixer": "10.4.14",
     "firebase": "^9.19.1",
+    "framer-motion": "^10.11.5",
     "moment": "^2.29.4",
     "next": "13.3.0",
     "next-auth": "^4.22.0",

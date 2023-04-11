@@ -118,7 +118,7 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-9 h-9 hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+            className="w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
           >
             <path
               strokeLinecap="round"
@@ -133,7 +133,7 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className={`  ${session?.user.uid === post?.data().id ? "display" :"hidden"} w-9 h-9 hoverEffect pt-2 hover:text-red-500  hover:bg-red-100`}
+            className={`  ${session?.user.uid === post?.data().id ? "display" :"hidden"} w-10 h-10 hoverEffect pt-2 hover:text-red-500  hover:bg-red-100`}
             onClick={() => deletePost()}
           >
             <path
@@ -151,7 +151,7 @@ export default function Post({ post }) {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-9 h-9 hoverEffect pt-2 hover:text-red-500  hover:text-bg-100"
+              className="w-10 h-10  hoverEffect pt-2 hover:text-red-500  hover:text-bg-100"
               onClick={likePost}
               >
               <path
@@ -174,7 +174,7 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-9 h-9 hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+            className="w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
           >
             <path
               strokeLinecap="round"
@@ -189,7 +189,7 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-9 h-9 hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+            className="w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
           >
             <path
               strokeLinecap="round"
