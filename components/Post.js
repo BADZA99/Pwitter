@@ -5,11 +5,14 @@ import { collection, deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firesto
 import { db, storage } from '@/firebase';
 import { signIn, useSession } from 'next-auth/react';
 import { deleteObject, ref } from 'firebase/storage';
+import { useRecoilState } from 'recoil';
+import { modalState } from '@/atom/modalAtom';
 
 export default function Post({ post }) {
   const { data: session } = useSession();
   const [likes, setlikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
+  const [open,setOpen]=useRecoilState(modalState);
 
   useEffect(() => {
     const unsubcribe = onSnapshot(
@@ -22,6 +25,8 @@ export default function Post({ post }) {
     setHasLiked(likes.findIndex((like) => like.id === session?.user.uid) !== -1)
 
   }, [likes]);
+
+
 
 
   async function likePost() {
@@ -118,7 +123,9 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+            className="  w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+
+            onClick={()=>setOpen(!open)}
           >
             <path
               strokeLinecap="round"
