@@ -4,9 +4,10 @@ import { modalState, postIdState } from '../atom/modalAtom';
 import Modal from 'react-modal'
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { db } from '../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import Moment from 'react-moment';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 
 
@@ -17,24 +18,24 @@ export default function CommentModal() {
     const [post, setPost] = useState({});
     const [input, setinput] = useState("");
     const { data: session } = useSession();
+    const router = useRouter();
 
 
     useEffect(() => {
         onSnapshot(doc(db, "posts", postId), (Snapshot) => { setPost(Snapshot) })
     }, { postId, db })
 
-    const sendComment = (e) => {
-        // e.preventDefault();
-        // if (session) {
-        //     db.collection("posts").doc(postId).collection("comments").add({
-        //         comment: input,
-        //         name: session.user.name,
-        //         userImg: session.user.image,
-        //         userName: session.user.username,
-        //         timestamp: new Date().getTime(),
-        //     })
-        //     setinput("");
-        // }
+    async function sendComment() {
+      await addDoc(collection(db, "posts", postId, "comments"), {
+        comment: input,
+        name: session.user.name,
+        userImg: session.user.image,
+        userName: session.user.username,
+        timestamp: serverTimestamp(),
+      });
+      setOpen(false);
+      setinput("");
+      router.push(`posts/${postId}`);
     }
 
 
@@ -71,9 +72,10 @@ export default function CommentModal() {
                             <span className="text-sm sm:text-[15px] hover:underline">
                                 <Moment fromNow>{post?.data()?.timestamp?.toDate()}</Moment>
                             </span>
+                        <p className='text-gray-500 text-[18px] sm:text-[17px] absolute top-12
+                         right-13 left-12 mb-2'>{post?.data()?.text}</p>
                         </div>
 
-                        <p className='text-gray-500 text-[15px] sm:text-[16px] ml-16 mb-2'>{post?.data()?.text}</p>
 
                         <div className="flex  p-3 space-x-3">
                             <img

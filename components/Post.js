@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ChatIcon, } from '@heroicons/react/outline';
 import Moment from 'react-moment';
-import { collection, deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db, storage } from '@/firebase';
 import { signIn, useSession } from 'next-auth/react';
 import { deleteObject, ref } from 'firebase/storage';
@@ -11,6 +11,7 @@ import { modalState, postIdState } from '@/atom/modalAtom';
 export default function Post({ post }) {
   const { data: session } = useSession();
   const [likes, setlikes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [open,setOpen]=useRecoilState(modalState);
   const [postId,setPostId]=useRecoilState(postIdState);
@@ -26,6 +27,13 @@ export default function Post({ post }) {
     setHasLiked(likes.findIndex((like) => like.id === session?.user.uid) !== -1)
 
   }, [likes]);
+
+  useEffect(() => {
+    const unsubcribe = onSnapshot(
+      collection(db, "posts", post.id, "comments"), (snapshot) => setComments(snapshot.docs)
+    )
+  }, [db]);
+
 
 
 
@@ -57,8 +65,9 @@ export default function Post({ post }) {
       }
      }
 
-
   }
+
+  
 
 
   return (
@@ -72,7 +81,7 @@ export default function Post({ post }) {
       />
 
       {/* right side */}
-      <div>
+      <div className='flex-1'>
         {/* header */}
         <div className="flex items-center justify-between">
           {/* post user info */}
@@ -118,6 +127,7 @@ export default function Post({ post }) {
 
         <div className="flex justify-between text-gray-500 p-2">
           {/*icone chat */}
+          <div className='flex items-center select-none'>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -144,6 +154,12 @@ export default function Post({ post }) {
               d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"
             />
           </svg>
+
+          {comments.length>0 && (
+            <span className='text-sm'>{comments.length}</span>
+          )}
+
+          </div>
           {/*icone boubelle */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
