@@ -6,13 +6,14 @@ import { db, storage } from '@/firebase';
 import { signIn, useSession } from 'next-auth/react';
 import { deleteObject, ref } from 'firebase/storage';
 import { useRecoilState } from 'recoil';
-import { modalState } from '@/atom/modalAtom';
+import { modalState, postIdState } from '@/atom/modalAtom';
 
 export default function Post({ post }) {
   const { data: session } = useSession();
   const [likes, setlikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [open,setOpen]=useRecoilState(modalState);
+  const [postId,setPostId]=useRecoilState(postIdState);
 
   useEffect(() => {
     const unsubcribe = onSnapshot(
@@ -81,7 +82,7 @@ export default function Post({ post }) {
               {post.data().name}
             </h4>
             <span className="text-sm sm:text-[15px]">
-              @{post.data().username} -{" "}
+              @{post.data().userName} -{" "}
             </span>
             <span className="text-sm sm:text-[15px] hover:underline">
               <Moment fromNow>{post?.data().timestamp?.toDate()}</Moment>
@@ -123,9 +124,19 @@ export default function Post({ post }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="  w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100"
+            className="  w-10 h-10  hoverEffect pt-2 hover:text-sky-500  hover:bg-sky-100 "
 
-            onClick={()=>setOpen(!open)}
+            onClick={()=> {
+
+              if(!session){
+                signIn();
+              }else{
+                
+                setPostId(post.id);
+                setOpen(!open);
+              }
+             
+            } }
           >
             <path
               strokeLinecap="round"
