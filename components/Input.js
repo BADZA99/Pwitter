@@ -1,16 +1,22 @@
 import React, { useRef, useState } from 'react' 
-import { useSession,signOut } from 'next-auth/react'
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db, storage } from '@/firebase';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import { useRecoilState } from 'recoil';
+import { userState } from '@/atom/userAtom';
+import { signOut } from 'next-auth/react';
+import { auth } from '@/firebase';
+import { getAuth } from 'firebase/auth';
+
 
 export default function Input() {
-  const { data: session } = useSession();
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
   const [input,setInput ] = useState("");
   const [selectedFile,setSelectedFile ] = useState(null);
   const [loading,setLoading ] = useState(false);
-  // console.log(session);
+  const auth=getAuth();
+  // console.log(currentUser);
 
   const filePickerRef = useRef(null);
 
@@ -18,12 +24,12 @@ export default function Input() {
     if(loading) return;
     setLoading(true);
     const docRef = await addDoc(collection(db,"posts"),{
-      id:session.user.uid,
+      id:currentUser.uid,
       text: input,
-      userImg: session.user.image,
-      userName: session.user.username,
+      userImg: currentUser.userImg,
+      userName: currentUser.username,
       timestamp: serverTimestamp(),
-      name:session.user.username,
+      name:currentUser.username,
     });
 
     const imageref=ref(storage,`posts/${docRef.id}/image`);
@@ -53,13 +59,18 @@ export default function Input() {
 
   }
   
+  const onsignOut = () => {
+    setCurrentUser(null);
+    signOut(auth)
+  };
+
   return (
     <>
-      {session && (
+      {currentUser && (
         <div className="flex border-b border-gray-200 p-3 space-x-3">
           <img
-            onClick={signOut}
-            src={session.user.image}
+            onClick={onsignOut}
+            src={currentUser.userImg}
             alt=""
             className="rounded-full h-11 w-11 cursor-pointer hover:brightness-95"
           />

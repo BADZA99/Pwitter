@@ -3,19 +3,21 @@ import { ChatIcon, } from '@heroicons/react/outline';
 import Moment from 'react-moment';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db, storage } from '@/firebase';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { deleteObject, ref } from 'firebase/storage';
 import { useRecoilState } from 'recoil';
 import { modalState, postIdState } from '@/atom/modalAtom';
 import { useRouter } from 'next/router';
+import { userState } from '@/atom/userAtom';
 
 export default function Post({ post,id }) {
-  const { data: session } = useSession();
   const [likes, setlikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [open,setOpen]=useRecoilState(modalState);
   const [postId,setPostId]=useRecoilState(postIdState);
+
+  const [currentUser] = useRecoilState(userState);
   const router=useRouter();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function Post({ post,id }) {
   }, [db]);
 
   useEffect(() => {
-    setHasLiked(likes.findIndex((like) => like.id === session?.user.uid) !== -1)
+    setHasLiked(likes.findIndex((like) => like.id === currentUser?.uid) !== -1)
 
   }, [likes]);
 
@@ -41,18 +43,19 @@ export default function Post({ post,id }) {
 
 
   async function likePost() {
-    if(session){
+    if(currentUser){
       if (hasLiked) {
         // remove like
-        await deleteDoc(doc(db,"posts",id,"likes",session?.user.uid));
+        await deleteDoc(doc(db,"posts",id,"likes",currentUser?.uid));
       }else{
         // add like
-        await setDoc(doc(db, "posts", id, "likes", session?.user.uid), {
-          username: session.user.username,
+        await setDoc(doc(db, "posts", id, "likes", currentUser?.uid), {
+          username: currentUser?.username,
         })
       }
     }else{
-      signIn();
+      // signIn();
+      router.push("/auth/signin")
     }
   }
 
@@ -81,7 +84,7 @@ export default function Post({ post,id }) {
 
       <img
         className="h-11 w-11 rounded-full object-cover mr-4 "
-        src={post?.data()?.userImg}
+        src={currentUser?.userImg}
         alt="user image"
       />
 
@@ -143,8 +146,9 @@ export default function Post({ post,id }) {
 
             onClick={()=> {
 
-              if(!session){
-                signIn();
+              if(!currentUser){
+                // signIn();
+                router.push("/auth/signin");
               }else{
                 
                 setPostId(id);
@@ -172,7 +176,7 @@ export default function Post({ post,id }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className={`  ${session?.user.uid === post?.data()?.id ? "display" :"hidden"} w-10 h-10 hoverEffect pt-2 hover:text-red-500  hover:bg-red-100`}
+            className={`  ${currentUser?.uid === post?.data()?.id ? "display" :"hidden"} w-10 h-10 hoverEffect pt-2 hover:text-red-500  hover:bg-red-100`}
             onClick={() => deletePost()}
           >
             <path
