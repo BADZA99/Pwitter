@@ -35,7 +35,7 @@ export default function CommentModal() {
       });
       setOpen(false);
       setinput("");
-      router.push(`posts/${postId}`);
+      router.push(`/posts/${postId}`);
     }
 
 
